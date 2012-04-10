@@ -44,35 +44,16 @@ module.exports = {
 
     "test makeId": function(test) {
 
-        test.expect(5);
+        test.expect(2);
 
-        mp.patch(Math, 'random', function() {
-            test.ok(true);
-            return 'random';
+        var sid = "045416959c6a863c3043433327cbdb9f";
+
+        mp.patch(crypto, 'randomBytes', function(size) {
+            test.equal(size, 16);
+            return new Buffer(sid, "hex");
         });
 
-        mp.patch(Date, 'now', function(){
-            return 'now'
-        });
-
-        mp.patch(crypto, 'createHash', function(alg) {
-
-            test.equal(alg, 'md5');
-
-            return {
-
-                update: function(data) {
-                    test.equal(data, process.pid + '.nowrandom')
-                },
-
-                digest: function(encoding) {
-                    test.equal(encoding, 'hex');
-                    return 'mock id';
-                }
-            }
-        });
-
-        test.equal(Session.makeId(), 'mock id');
+        test.equal(Session.makeId(), sid);
         test.done();
     },
 
